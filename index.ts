@@ -76,11 +76,19 @@ function validateNonEmpty(value: string) {
 
 program
     .action(async () => {
-        console.log(process.cwd());
-
         let type: string = "";
         let soggetto: string = ""
         let body = ""
+
+        /* check the git status */
+        await git.status((err, data) => {
+            if (data.staged.length === 0) {
+                console.log(chalk.red("Nessun file modificato"));
+                process.exit(1);
+            }
+        });
+
+
         await inquirer.prompt(domandeIT)
             .then(async (rispota) => {
                 if (rispota.type === "custom") {
@@ -109,7 +117,6 @@ program
 ${body}        
 `
 
-
         await git.commit(messaggio, (err, data) => {
             if (err) {
                 console.log(chalk.red(err));
@@ -126,7 +133,6 @@ program
     .command("init")
     .action(() => {
         console.log("ciao");
-
     })
 
 program.parse(process.argv);
