@@ -2,12 +2,13 @@
   "name": "siuum-commit",
   "module": "./dist/index.js",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A simple CLI to help you commit your code",
   "repository": {
     "type": "git",
-    "url": "git"
+    "url": "https://github.com/Proibito/siuum-commit"
   },
+  "license": "MIT",
   "devDependencies": {
     "bun-types": "^0.5.0",
     "prettier-plugin-organize-imports": "^3.2.2",

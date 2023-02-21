@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import { sleep } from "bun";
 import chalk from "chalk";
 import { Command } from 'commander';
 import { ResetMode, simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
@@ -55,7 +54,7 @@ const tipoCustomIT = [
 
 const bodyIt = [
     {
-        type: "input",
+        type: "editor",
         name: "soggetto",
         message: "Inserisci il corpo del commit",
         validate(input: string) {
