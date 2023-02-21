@@ -38,20 +38,76 @@ const domandeIT: QuestionCollection = [
     }
 ]
 
+const soggettoIt = [
+    {
+        type: "input",
+        name: "soggetto",
+        message: "Inserisci il soggetto del commit",
+        validate(input: string) {
+            return validateNonEmpty(input);
+        }
+    }
+]
+
+const bodyIt = [
+    {
+        type: "input",
+        name: "soggetto",
+        message: "Inserisci il soggetto del commit",
+        validate(input: string) {
+            return validateNonEmpty(input);
+        }
+    }
+]
+
+function validateNonEmpty(value: string) {
+    if (value.length === 0) {
+        throw Error("Non puoi lasciare vuoto questo campo");
+    } else if (value)
+        return true;
+}
+
+
 program
     .action(async () => {
         console.log(process.cwd());
 
-        let messaggio = "";
-
+        let type: string = "";
+        let soggetto: string = ""
+        let body = ""
         await inquirer.prompt(domandeIT)
             .then((rispota) => {
-                messaggio = `${rispota.type}:`
-
+                type = `${rispota.type}`
             })
-        console.log(chalk.green("Commit effettuato"));
-        git.commit("header")
-        git.commit("body")
+
+        console.log(chalk.green(`type scelto: ${type}`));
+
+        await inquirer.prompt(soggettoIt).then((risposta) => {
+            soggetto = risposta.soggetto
+        })
+        console.log(chalk.green(`soggetto: ${soggetto}`));
+
+        await inquirer.prompt(bodyIt).then((risposta) => {
+            body = risposta.soggetto
+        })
+
+        let messaggio = `${type}: ${soggetto}
+
+${body}
+        
+        
+`
+
+        console.log(messaggio);
+
+        // git.commit(messaggio, (err, data) => {
+        //     if (err) {
+        //         console.log(chalk.red(err));
+        //     } else {
+        //         console.log(chalk.green(data));
+        //     }
+        // })
+
 
     });
 
