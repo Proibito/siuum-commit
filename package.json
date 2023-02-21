@@ -1,6 +1,6 @@
 {
   "name": "cli-github",
-  "module": "index.ts",
+  "module": "./dist/index.js",
   "type": "module",
   "devDependencies": {
     "bun-types": "^0.5.0",
@@ -8,10 +8,15 @@
     "tsc-watch": "^6.0.0"
   },
   "dependencies": {
+    "@types/inquirer": "^9.0.3",
     "chalk": "^5.2.0",
     "commander": "^10.0.0",
     "inquirer": "^9.1.4",
     "prettier": "^2.8.4",
     "simple-git": "^3.16.1"
-  }
+  },
+  "bin": {
+    "siuum": "./dist/index.js"
+  },
+  "preferGlobal": true
 }
