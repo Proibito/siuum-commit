@@ -9,7 +9,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 
-
 const program = new Command();
 
 const options: Partial<SimpleGitOptions> = {
@@ -31,11 +30,8 @@ const domandeIT: QuestionCollection = [
         message: 'Che cosa vuoi fare?',
         choices: ['docs', 'feat', 'fix', 'pref', 'refactor', 'test', 'custom'],
         loop: true,
-
-        // filter(val) {
-        //     return val.toLowerCase();
-        // },
     }
+
 ]
 
 const soggettoIt = [
@@ -49,11 +45,19 @@ const soggettoIt = [
     }
 ]
 
+const tipoCustomIT = [
+    {
+        type: "input",
+        name: "soggetto",
+        message: "Inserisci il tipo custom del commit"
+    }
+]
+
 const bodyIt = [
     {
         type: "input",
         name: "soggetto",
-        message: "Inserisci il soggetto del commit",
+        message: "Inserisci il corpo del commit",
         validate(input: string) {
             return validateNonEmpty(input);
         }
@@ -63,8 +67,10 @@ const bodyIt = [
 function validateNonEmpty(value: string) {
     if (value.length === 0) {
         throw Error("Non puoi lasciare vuoto questo campo");
-    } else if (value)
-        return true;
+    } else if (value.length < 10) {
+        throw Error("Il soggetto deve essere lungo almeno 10 caratteri");
+    }
+    return true;
 }
 
 
@@ -76,8 +82,14 @@ program
         let soggetto: string = ""
         let body = ""
         await inquirer.prompt(domandeIT)
-            .then((rispota) => {
-                type = `${rispota.type}`
+            .then(async (rispota) => {
+                if (rispota.type === "custom") {
+                    await inquirer.prompt(tipoCustomIT).then((risposta) => {
+                        type = risposta.soggetto
+                    })
+                    return
+                }
+                type = rispota.type
             })
 
         console.log(chalk.green(`type scelto: ${type}`));
@@ -85,6 +97,7 @@ program
         await inquirer.prompt(soggettoIt).then((risposta) => {
             soggetto = risposta.soggetto
         })
+
         console.log(chalk.green(`soggetto: ${soggetto}`));
 
         await inquirer.prompt(bodyIt).then((risposta) => {
@@ -93,21 +106,19 @@ program
 
         let messaggio = `${type}: ${soggetto}
 
-${body}
-        
-        
+${body}        
 `
 
-        console.log(messaggio);
 
-        // git.commit(messaggio, (err, data) => {
-        //     if (err) {
-        //         console.log(chalk.red(err));
-        //     } else {
-        //         console.log(chalk.green(data));
-        //     }
-        // })
-
+        await git.commit(messaggio, (err, data) => {
+            if (err) {
+                console.log(chalk.red(err));
+            } else if (data.summary.changes === 0) {
+                console.log(chalk.red("Nessun file modificato"));
+            } else {
+                console.log(chalk.cyan("Fatto il commit 🌈"));
+            }
+        })
 
     });
 

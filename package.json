@@ -1,5 +1,5 @@
 {
-  "name": "cli-github",
+  "name": "siuum-commit",
   "module": "./dist/index.js",
   "type": "module",
   "devDependencies": {
