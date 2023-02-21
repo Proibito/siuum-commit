@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 const program = new Command();
 
 const options: Partial<SimpleGitOptions> = {
-    baseDir: "C:\\Users\\Utente\\CLI-github",
+    baseDir: process.cwd(),
     binary: 'git',
     maxConcurrentProcesses: 6,
     trimmed: false,
@@ -54,7 +54,7 @@ const tipoCustomIT = [
 
 const bodyIt = [
     {
-        type: "editor",
+        type: "input",
         name: "soggetto",
         message: "Inserisci il corpo del commit",
         validate(input: string) {
