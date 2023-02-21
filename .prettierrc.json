@@ -1,0 +1,6 @@
+{
+  "extends": ["plugin:prettier/recommended"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "organizeImportsSkipDestructiveCodeActions": true
+}
