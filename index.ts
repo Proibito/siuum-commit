@@ -79,8 +79,15 @@ program
 
         /* check the git status */
         await git.status((err, data) => {
+
+            if (err) {
+                console.error(chalk.red("Problema con git" + err.message));
+                process.exit(-1);
+            }
+
+
             if (data.staged.length === 0) {
-                console.log(chalk.red("Nessun file modificato"));
+                console.error(chalk.red("Nessun file modificato"));
                 process.exit(1);
             }
         });
