@@ -107,10 +107,16 @@ program
                 process.exit(1);
             }
 
+
             let scelte: { name: string }[] = []
-            data.modified.forEach(element => {
+            const daRimuovere = new Set(data.staged)
+            let daAggiungere = (data.modified as string[]).filter(x => !daRimuovere.has(x))
+            daAggiungere = daAggiungere.concat(data.not_added)
+
+            daAggiungere.forEach(element => {
                 scelte.push({ name: element })
             });
+
             await inquirer.prompt({
                 type: 'checkbox',
                 name: 'files',
