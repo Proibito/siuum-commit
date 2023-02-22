@@ -75,9 +75,7 @@ function validateNonEmpty(value: string) {
 
 program
     .action(async () => {
-        let type: string = "";
-        let soggetto: string = ""
-        let body = ""
+
 
         /* check the git status */
         await git.status((err, data) => {
@@ -87,51 +85,99 @@ program
             }
         });
 
+        await commit();
 
-        await inquirer.prompt(domandeIT)
-            .then(async (rispota) => {
-                if (rispota.type === "custom") {
-                    await inquirer.prompt(tipoCustomIT).then((risposta) => {
-                        type = risposta.soggetto
-                    })
-                    return
-                }
-                type = rispota.type
-            })
-
-        console.log(chalk.green(`type scelto: ${type}`));
-
-        await inquirer.prompt(soggettoIt).then((risposta) => {
-            soggetto = risposta.soggetto
-        })
-
-        console.log(chalk.green(`soggetto: ${soggetto}`));
-
-        await inquirer.prompt(bodyIt).then((risposta) => {
-            body = risposta.soggetto
-        })
-
-        let messaggio = `${type}: ${soggetto}
-
-${body}        
-`
-
-        await git.commit(messaggio, (err, data) => {
-            if (err) {
-                console.log(chalk.red(err));
-            } else if (data.summary.changes === 0) {
-                console.log(chalk.red("Nessun file modificato"));
-            } else {
-                console.log(chalk.cyan("Fatto il commit 🌈"));
-            }
-        })
 
     });
 
 program
-    .command("init")
-    .action(() => {
-        console.log("ciao");
+    .command("add")
+    .action(async () => {
+        await git.status(async (err, data) => {
+
+            if (data.modified.length === 0) {
+                console.log(chalk.red("Nessun file modificato"));
+                process.exit(1);
+            }
+
+            let scelte: { name: string }[] = []
+            data.modified.forEach(element => {
+                scelte.push({ name: element })
+            });
+            await inquirer.prompt({
+                type: 'checkbox',
+                name: 'files',
+                message: 'Quali files vuoi aggiungere?',
+                choices: scelte,
+                loop: true,
+            }).then(async (risposta) => {
+                if (risposta.files.length === 0) {
+                    console.log(chalk.red("Nessun file selezionato"));
+                    process.exit(1);
+                }
+
+                await git.add(risposta.files, (err, data) => {
+                    if (err) {
+                        console.log(chalk.red(err));
+                        process.exit(1);
+                    } else if (data) {
+                        console.log(data);
+
+                        console.log(chalk.red("Nessun file modificato"));
+                    } else {
+                        console.log(chalk.cyan("Aggiunti i files staged"));
+                    }
+                })
+            })
+
+            await commit();
+        });
     })
+
+
+async function commit() {
+
+    let type: string = "";
+    let soggetto: string = ""
+    let body = ""
+
+    await inquirer.prompt(domandeIT)
+        .then(async (rispota) => {
+            if (rispota.type === "custom") {
+                await inquirer.prompt(tipoCustomIT).then((risposta) => {
+                    type = risposta.soggetto
+                })
+                return
+            }
+            type = rispota.type
+        })
+
+    console.log(chalk.green(`type scelto: ${type}`));
+
+    await inquirer.prompt(soggettoIt).then((risposta) => {
+        soggetto = risposta.soggetto
+    })
+
+    console.log(chalk.green(`soggetto: ${soggetto}`));
+
+    await inquirer.prompt(bodyIt).then((risposta) => {
+        body = risposta.soggetto
+    })
+
+    let messaggio = `${type}: ${soggetto}
+
+${body}        
+`
+
+    await git.commit(messaggio, (err, data) => {
+        if (err) {
+            console.log(chalk.red(err));
+        } else if (data.summary.changes === 0) {
+            console.log(chalk.red("Nessun file modificato"));
+        } else {
+            console.log(chalk.cyan("Fatto il commit 🌈"));
+        }
+    })
+}
 
 program.parse(process.argv);
