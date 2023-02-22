@@ -2,7 +2,7 @@
   "name": "siuum-commit",
   "module": "./dist/index.js",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "A simple CLI to help you commit your code",
   "repository": {
     "type": "git",
